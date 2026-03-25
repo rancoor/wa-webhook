@@ -1,381 +1,1053 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WA Webhook Receiver</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0a0f0a;
-    --surface: #111811;
-    --surface2: #182018;
-    --border: #2a3a2a;
-    --green: #25d366;
-    --green-dim: #1a9e4a;
-    --green-glow: rgba(37,211,102,0.12);
-    --text: #e8f0e8;
-    --text-dim: #7a9a7a;
-    --text-muted: #3d5a3d;
-    --red: #ff5555;
-    --amber: #ffb347;
-    --radius: 8px;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+<!DOCTYPE html><!DOCTYPE html>
+
+<html lang="en"><html lang="en">
+
+<head><head>
+
+  <meta charset="UTF-8"><meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>WhatsApp Webhook Dashboard</title><title>WA Webhook Receiver</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style><style>
+
+    :root {  :root {
+
+      --primary: #25d366;    --bg: #0a0f0a;
+
+      --primary-dark: #1a9e4a;    --surface: #111811;
+
+      --primary-light: rgba(37, 211, 102, 0.1);    --surface2: #182018;
+
+      --bg: #0f0f0f;    --border: #2a3a2a;
+
+      --surface: #1a1a1a;    --green: #25d366;
+
+      --surface-hover: #242424;    --green-dim: #1a9e4a;
+
+      --surface-alt: #2d2d2d;    --green-glow: rgba(37,211,102,0.12);
+
+      --border: #333333;    --text: #e8f0e8;
+
+      --text: #ffffff;    --text-dim: #7a9a7a;
+
+      --text-secondary: #b0b0b0;    --text-muted: #3d5a3d;
+
+      --text-muted: #808080;    --red: #ff5555;
+
+      --success: #10b981;    --amber: #ffb347;
+
+      --warning: #f59e0b;    --radius: 8px;
+
+      --error: #ef4444;  }
+
+      --radius: 12px;  * { margin:0; padding:0; box-sizing:border-box; }
+
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.4);  body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+
+    }
 
   header {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:14px 24px; border-bottom:1px solid var(--border);
-    background:var(--surface); position:sticky; top:0; z-index:10;
-  }
-  .logo { display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px; color:var(--green); letter-spacing:-.5px; }
-  .logo svg { width:22px; height:22px; }
-  .status-pill { display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:4px 12px; }
-  .dot { width:7px; height:7px; border-radius:50%; background:var(--text-muted); transition:background .3s; }
-  .dot.on { background:var(--green); animation:pulse 2s infinite; }
-  .dot.err { background:var(--red); }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
 
-  .app { display:flex; flex:1; min-height:0; height:calc(100vh - 53px); }
+    * {    display:flex; align-items:center; justify-content:space-between;
+
+      margin: 0;    padding:14px 24px; border-bottom:1px solid var(--border);
+
+      padding: 0;    background:var(--surface); position:sticky; top:0; z-index:10;
+
+      box-sizing: border-box;  }
+
+    }  .logo { display:flex; align-items:center; gap:10px; font-family:'IBM Plex Mono',monospace; font-weight:600; font-size:15px; color:var(--green); letter-spacing:-.5px; }
+
+  .logo svg { width:22px; height:22px; }
+
+    body {  .status-pill { display:flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-dim); background:var(--surface2); border:1px solid var(--border); border-radius:20px; padding:4px 12px; }
+
+      font-family: 'Inter', sans-serif;  .dot { width:7px; height:7px; border-radius:50%; background:var(--text-muted); transition:background .3s; }
+
+      background: var(--bg);  .dot.on { background:var(--green); animation:pulse 2s infinite; }
+
+      color: var(--text);  .dot.err { background:var(--red); }
+
+      min-height: 100vh;  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+
+      display: flex;
+
+      flex-direction: column;  .app { display:flex; flex:1; min-height:0; height:calc(100vh - 53px); }
+
+    }
 
   aside { width:300px; flex-shrink:0; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; }
-  .section { padding:16px 20px; border-bottom:1px solid var(--border); }
-  .section-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
-  .info-row { display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
-  .info-row label { font-size:10px; color:var(--text-muted); }
-  .copy-row { display:flex; gap:6px; }
-  .copy-row input { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:7px 10px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text); outline:none; }
-  .btn-icon { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:0 10px; cursor:pointer; color:var(--text-dim); font-size:13px; transition:all .2s; }
-  .btn-icon:hover { border-color:var(--green-dim); color:var(--green); }
 
-  .contacts-list { list-style:none; flex:1; }
-  .contact-item { display:flex; align-items:center; gap:10px; padding:10px 16px; cursor:pointer; transition:background .15s; border-bottom:1px solid var(--surface2); }
-  .contact-item:hover { background:var(--surface2); }
-  .contact-item.active { background:var(--green-glow); border-left:2px solid var(--green); padding-left:14px; }
+    /* Header */  .section { padding:16px 20px; border-bottom:1px solid var(--border); }
+
+    header {  .section-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; }
+
+      display: flex;  .info-row { display:flex; flex-direction:column; gap:3px; margin-bottom:10px; }
+
+      align-items: center;  .info-row label { font-size:10px; color:var(--text-muted); }
+
+      justify-content: space-between;  .copy-row { display:flex; gap:6px; }
+
+      padding: 16px 24px;  .copy-row input { flex:1; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:7px 10px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text); outline:none; }
+
+      border-bottom: 1px solid var(--border);  .btn-icon { background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:0 10px; cursor:pointer; color:var(--text-dim); font-size:13px; transition:all .2s; }
+
+      background: var(--surface);  .btn-icon:hover { border-color:var(--green-dim); color:var(--green); }
+
+      position: sticky;
+
+      top: 0;  .contacts-list { list-style:none; flex:1; }
+
+      z-index: 100;  .contact-item { display:flex; align-items:center; gap:10px; padding:10px 16px; cursor:pointer; transition:background .15s; border-bottom:1px solid var(--surface2); }
+
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);  .contact-item:hover { background:var(--surface2); }
+
+    }  .contact-item.active { background:var(--green-glow); border-left:2px solid var(--green); padding-left:14px; }
+
   .avatar { width:36px; height:36px; border-radius:50%; background:var(--surface2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-weight:600; font-size:13px; color:var(--green); flex-shrink:0; }
-  .contact-info { flex:1; min-width:0; }
-  .contact-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .contact-preview { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
-  .contact-time { font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; flex-shrink:0; }
-  .badge { background:var(--green); color:#000; border-radius:10px; font-size:10px; font-weight:700; padding:1px 6px; }
-  .empty-contacts { padding:24px 16px; color:var(--text-muted); font-size:11px; text-align:center; font-family:'IBM Plex Mono',monospace; line-height:1.7; }
 
-  main { flex:1; display:flex; flex-direction:column; min-width:0; }
+    .logo {  .contact-info { flex:1; min-width:0; }
+
+      display: flex;  .contact-name { font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+      align-items: center;  .contact-preview { font-size:11px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+
+      gap: 12px;  .contact-time { font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; flex-shrink:0; }
+
+      font-weight: 700;  .badge { background:var(--green); color:#000; border-radius:10px; font-size:10px; font-weight:700; padding:1px 6px; }
+
+      font-size: 18px;  .empty-contacts { padding:24px 16px; color:var(--text-muted); font-size:11px; text-align:center; font-family:'IBM Plex Mono',monospace; line-height:1.7; }
+
+      color: var(--primary);
+
+    }  main { flex:1; display:flex; flex-direction:column; min-width:0; }
+
   .no-selection { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; color:var(--text-muted); }
-  .no-selection h3 { font-size:16px; font-weight:500; color:var(--text-dim); }
-  .no-selection p { font-size:12px; font-family:'IBM Plex Mono',monospace; text-align:center; max-width:300px; line-height:1.7; }
 
-  #chat-view { display:none; flex-direction:column; height:100%; }
+    .logo svg {  .no-selection h3 { font-size:16px; font-weight:500; color:var(--text-dim); }
+
+      width: 28px;  .no-selection p { font-size:12px; font-family:'IBM Plex Mono',monospace; text-align:center; max-width:300px; line-height:1.7; }
+
+      height: 28px;
+
+    }  #chat-view { display:none; flex-direction:column; height:100%; }
+
   .chat-header { padding:12px 20px; border-bottom:1px solid var(--border); background:var(--surface); display:flex; align-items:center; justify-content:space-between; }
-  .chat-contact { display:flex; align-items:center; gap:10px; }
-  .chat-contact .name { font-weight:600; font-size:14px; }
-  .chat-contact .phone { font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; }
 
-  .messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px; }
-  .messages::-webkit-scrollbar { width:4px; }
-  .messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+    .status-indicator {  .chat-contact { display:flex; align-items:center; gap:10px; }
 
-  .msg { max-width:68%; display:flex; flex-direction:column; gap:3px; animation:msgIn .2s ease; }
-  @keyframes msgIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
-  .msg.inbound { align-self:flex-start; }
+      display: flex;  .chat-contact .name { font-weight:600; font-size:14px; }
+
+      align-items: center;  .chat-contact .phone { font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; }
+
+      gap: 8px;
+
+      padding: 8px 16px;  .messages { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px; }
+
+      background: var(--surface-alt);  .messages::-webkit-scrollbar { width:4px; }
+
+      border-radius: 20px;  .messages::-webkit-scrollbar-thumb { background:var(--border); border-radius:4px; }
+
+      border: 1px solid var(--border);
+
+      font-size: 12px;  .msg { max-width:68%; display:flex; flex-direction:column; gap:3px; animation:msgIn .2s ease; }
+
+      color: var(--text-secondary);  @keyframes msgIn { from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)} }
+
+    }  .msg.inbound { align-self:flex-start; }
+
   .msg.outbound { align-self:flex-end; }
-  .bubble { padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.5; }
-  .msg.inbound .bubble { background:var(--surface2); border:1px solid var(--border); border-bottom-left-radius:4px; }
-  .msg.outbound .bubble { background:#1a4a2a; border:1px solid #2a6a3a; border-bottom-right-radius:4px; }
-  .msg-meta { display:flex; gap:6px; align-items:center; font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
-  .msg.outbound .msg-meta { justify-content:flex-end; }
-  .msg-type-tag { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:9px; color:var(--text-muted); text-transform:uppercase; }
+
+    .status-dot {  .bubble { padding:9px 13px; border-radius:12px; font-size:13px; line-height:1.5; }
+
+      width: 8px;  .msg.inbound .bubble { background:var(--surface2); border:1px solid var(--border); border-bottom-left-radius:4px; }
+
+      height: 8px;  .msg.outbound .bubble { background:#1a4a2a; border:1px solid #2a6a3a; border-bottom-right-radius:4px; }
+
+      border-radius: 50%;  .msg-meta { display:flex; gap:6px; align-items:center; font-size:10px; color:var(--text-muted); font-family:'IBM Plex Mono',monospace; }
+
+      background: var(--primary);  .msg.outbound .msg-meta { justify-content:flex-end; }
+
+      animation: pulse 2s infinite;  .msg-type-tag { background:var(--surface2); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:9px; color:var(--text-muted); text-transform:uppercase; }
+
+    }
 
   /* log */
-  .log-panel { height:150px; border-top:1px solid var(--border); background:#060a06; overflow-y:auto; flex-shrink:0; }
-  .log-header { padding:6px 14px; border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:#060a06; }
-  .log-entries { padding:4px 14px 8px; }
-  .log-entry { font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.7; color:var(--text-muted); }
-  .log-entry .ts { color:var(--green-dim); }
-  .log-entry .lvl-info { color:var(--green); }
-  .log-entry .lvl-warn { color:var(--amber); }
-  .log-entry .lvl-err  { color:var(--red); }
 
-  .btn { padding:7px 14px; border-radius:var(--radius); font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:12px; cursor:pointer; transition:all .2s; border:1px solid var(--border); background:transparent; color:var(--text-dim); }
-  .btn:hover { border-color:var(--green-dim); color:var(--green); }
+    @keyframes pulse {  .log-panel { height:150px; border-top:1px solid var(--border); background:#060a06; overflow-y:auto; flex-shrink:0; }
+
+      0%, 100% { opacity: 1; }  .log-header { padding:6px 14px; border-bottom:1px solid var(--border); font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; background:#060a06; }
+
+      50% { opacity: 0.5; }  .log-entries { padding:4px 14px 8px; }
+
+    }  .log-entry { font-family:'IBM Plex Mono',monospace; font-size:11px; line-height:1.7; color:var(--text-muted); }
+
+  .log-entry .ts { color:var(--green-dim); }
+
+    /* Main layout */  .log-entry .lvl-info { color:var(--green); }
+
+    .app-container {  .log-entry .lvl-warn { color:var(--amber); }
+
+      display: flex;  .log-entry .lvl-err  { color:var(--red); }
+
+      flex: 1;
+
+      min-height: 0;  .btn { padding:7px 14px; border-radius:var(--radius); font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:12px; cursor:pointer; transition:all .2s; border:1px solid var(--border); background:transparent; color:var(--text-dim); }
+
+    }  .btn:hover { border-color:var(--green-dim); color:var(--green); }
+
   .btn.danger:hover { border-color:var(--red); color:var(--red); }
 
-  #toast { position:fixed; bottom:24px; right:24px; background:var(--surface); border:1px solid var(--green-dim); color:var(--green); border-radius:var(--radius); padding:10px 16px; font-size:12px; font-family:'IBM Plex Mono',monospace; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; z-index:100; box-shadow:0 4px 20px rgba(0,0,0,.4); }
-  #toast.show { transform:translateY(0); opacity:1; }
-  #toast.error { border-color:var(--red); color:var(--red); }
+    /* Sidebar */
 
-  aside::-webkit-scrollbar { width:3px; }
-  aside::-webkit-scrollbar-thumb { background:var(--border); }
-</style>
-</head>
-<body>
+    aside {  #toast { position:fixed; bottom:24px; right:24px; background:var(--surface); border:1px solid var(--green-dim); color:var(--green); border-radius:var(--radius); padding:10px 16px; font-size:12px; font-family:'IBM Plex Mono',monospace; transform:translateY(20px); opacity:0; transition:all .25s; pointer-events:none; z-index:100; box-shadow:0 4px 20px rgba(0,0,0,.4); }
+
+      width: 320px;  #toast.show { transform:translateY(0); opacity:1; }
+
+      flex-shrink: 0;  #toast.error { border-color:var(--red); color:var(--red); }
+
+      background: var(--surface);
+
+      border-right: 1px solid var(--border);  aside::-webkit-scrollbar { width:3px; }
+
+      display: flex;  aside::-webkit-scrollbar-thumb { background:var(--border); }
+
+      flex-direction: column;</style>
+
+      overflow: hidden;</head>
+
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);<body>
+
+    }
 
 <header>
-  <div class="logo">
-    <svg viewBox="0 0 24 24" fill="none">
-      <path d="M17.6 6.4A8 8 0 1 0 19.9 15l2.1.6-1.8-4.9A8 8 0 0 0 17.6 6.4z" fill="#25d366"/>
-      <circle cx="9"  cy="12" r="1" fill="#000"/>
+
+    .sidebar-section {  <div class="logo">
+
+      padding: 20px;    <svg viewBox="0 0 24 24" fill="none">
+
+      border-bottom: 1px solid var(--border);      <path d="M17.6 6.4A8 8 0 1 0 19.9 15l2.1.6-1.8-4.9A8 8 0 0 0 17.6 6.4z" fill="#25d366"/>
+
+    }      <circle cx="9"  cy="12" r="1" fill="#000"/>
+
       <circle cx="12" cy="12" r="1" fill="#000"/>
-      <circle cx="15" cy="12" r="1" fill="#000"/>
-    </svg>
-    WA Webhook Receiver
-  </div>
-  <div class="status-pill">
-    <span class="dot" id="ws-dot"></span>
-    <span id="ws-status">Connecting…</span>
-  </div>
+
+    .sidebar-section-title {      <circle cx="15" cy="12" r="1" fill="#000"/>
+
+      font-size: 11px;    </svg>
+
+      font-weight: 600;    WA Webhook Receiver
+
+      text-transform: uppercase;  </div>
+
+      letter-spacing: 0.8px;  <div class="status-pill">
+
+      color: var(--text-muted);    <span class="dot" id="ws-dot"></span>
+
+      margin-bottom: 12px;    <span id="ws-status">Connecting…</span>
+
+    }  </div>
+
 </header>
 
-<div class="app">
-  <aside>
-    <!-- Webhook info -->
-    <div class="section">
-      <div class="section-label">Webhook Endpoint</div>
-      <div class="info-row">
+    .info-card {
+
+      background: var(--surface-alt);<div class="app">
+
+      border: 1px solid var(--border);  <aside>
+
+      border-radius: var(--radius);    <!-- Webhook info -->
+
+      padding: 12px;    <div class="section">
+
+      margin-bottom: 8px;      <div class="section-label">Webhook Endpoint</div>
+
+    }      <div class="info-row">
+
         <label>Callback URL (paste into Meta)</label>
-        <div class="copy-row">
-          <input id="webhook-url" type="text" readonly>
-          <button class="btn-icon" onclick="copyEl('webhook-url')" title="Copy">⎘</button>
-        </div>
-      </div>
-      <div class="info-row">
-        <label>Verify Token (paste into Meta)</label>
-        <div class="copy-row">
-          <input id="verify-token" type="text" readonly>
-          <button class="btn-icon" onclick="copyEl('verify-token')" title="Copy">⎘</button>
-        </div>
-      </div>
-    </div>
 
-    <!-- Conversations -->
-    <div class="section" style="padding-bottom:8px">
-      <div class="section-label">Conversations</div>
-    </div>
-    <ul class="contacts-list" id="contacts-list">
-      <li class="empty-contacts">No messages yet.<br><br>Point your Meta webhook to this server and incoming messages will appear here.</li>
-    </ul>
-  </aside>
+    .info-label {        <div class="copy-row">
 
-  <main>
-    <div class="no-selection" id="no-selection">
-      <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+      font-size: 11px;          <input id="webhook-url" type="text" readonly>
+
+      color: var(--text-muted);          <button class="btn-icon" onclick="copyEl('webhook-url')" title="Copy">⎘</button>
+
+      margin-bottom: 4px;        </div>
+
+      text-transform: uppercase;      </div>
+
+      letter-spacing: 0.5px;      <div class="info-row">
+
+    }        <label>Verify Token (paste into Meta)</label>
+
+        <div class="copy-row">
+
+    .info-value {          <input id="verify-token" type="text" readonly>
+
+      font-size: 20px;          <button class="btn-icon" onclick="copyEl('verify-token')" title="Copy">⎘</button>
+
+      font-weight: 700;        </div>
+
+      color: var(--primary);      </div>
+
+    }    </div>
+
+
+
+    .status-badge {    <!-- Conversations -->
+
+      display: inline-flex;    <div class="section" style="padding-bottom:8px">
+
+      align-items: center;      <div class="section-label">Conversations</div>
+
+      gap: 6px;    </div>
+
+      padding: 4px 10px;    <ul class="contacts-list" id="contacts-list">
+
+      background: rgba(16, 185, 129, 0.1);      <li class="empty-contacts">No messages yet.<br><br>Point your Meta webhook to this server and incoming messages will appear here.</li>
+
+      border: 1px solid var(--success);    </ul>
+
+      border-radius: 6px;  </aside>
+
+      font-size: 11px;
+
+      color: var(--success);  <main>
+
+      font-weight: 600;    <div class="no-selection" id="no-selection">
+
+    }      <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+
         <path d="M17.6 6.4A8 8 0 1 0 19.9 15l2.1.6-1.8-4.9A8 8 0 0 0 17.6 6.4z" fill="#25d366" opacity=".25"/>
-      </svg>
-      <h3>No conversation selected</h3>
-      <p>Select a conversation from the left, or wait for incoming WhatsApp messages.</p>
-    </div>
 
-    <div id="chat-view">
-      <div class="chat-header">
+    /* Contacts list */      </svg>
+
+    .contacts-section {      <h3>No conversation selected</h3>
+
+      flex: 1;      <p>Select a conversation from the left, or wait for incoming WhatsApp messages.</p>
+
+      display: flex;    </div>
+
+      flex-direction: column;
+
+      min-height: 0;    <div id="chat-view">
+
+    }      <div class="chat-header">
+
         <div class="chat-contact">
-          <div class="avatar" id="chat-avatar">?</div>
-          <div>
-            <div class="name" id="chat-name">—</div>
-            <div class="phone" id="chat-phone">—</div>
-          </div>
-        </div>
+
+    .contacts-list {          <div class="avatar" id="chat-avatar">?</div>
+
+      list-style: none;          <div>
+
+      flex: 1;            <div class="name" id="chat-name">—</div>
+
+      overflow-y: auto;            <div class="phone" id="chat-phone">—</div>
+
+      padding: 8px 12px;          </div>
+
+    }        </div>
+
         <div style="display:flex;gap:8px">
-          <button class="btn" onclick="clearChat()">Clear</button>
-        </div>
-      </div>
 
-      <div class="messages" id="messages"></div>
+    .contacts-list::-webkit-scrollbar {          <button class="btn" onclick="clearChat()">Clear</button>
 
-      <div class="log-panel">
+      width: 6px;        </div>
+
+    }      </div>
+
+
+
+    .contacts-list::-webkit-scrollbar-track {      <div class="messages" id="messages"></div>
+
+      background: transparent;
+
+    }      <div class="log-panel">
+
         <div class="log-header">
-          <span>WEBHOOK LOG</span>
-          <button onclick="clearLog()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:10px;font-family:inherit">CLEAR</button>
-        </div>
-        <div class="log-entries" id="log-entries"></div>
+
+    .contacts-list::-webkit-scrollbar-thumb {          <span>WEBHOOK LOG</span>
+
+      background: var(--border);          <button onclick="clearLog()" style="background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:10px;font-family:inherit">CLEAR</button>
+
+      border-radius: 3px;        </div>
+
+    }        <div class="log-entries" id="log-entries"></div>
+
       </div>
-    </div>
-  </main>
-</div>
 
-<div id="toast"></div>
+    .contact-item {    </div>
 
-<script>
-// ── State ───────────────────────────────────────────
-let conversations = {};
-let activePhone   = null;
-let ws;
+      display: flex;  </main>
+
+      align-items: center;</div>
+
+      gap: 12px;
+
+      padding: 12px;<div id="toast"></div>
+
+      margin-bottom: 8px;
+
+      background: var(--surface-alt);<script>
+
+      border: 1px solid var(--border);// ── State ───────────────────────────────────────────
+
+      border-radius: var(--radius);let conversations = {};
+
+      cursor: pointer;let activePhone   = null;
+
+      transition: all 0.2s;let ws;
+
+    }
 
 // ── Boot ────────────────────────────────────────────
-(async function init() {
-  // Fetch config from server
-  try {
-    const res = await fetch('/api/config');
+
+    .contact-item:hover {(async function init() {
+
+      background: var(--surface-hover);  // Fetch config from server
+
+      border-color: var(--primary);  try {
+
+    }    const res = await fetch('/api/config');
+
     const cfg = await res.json();
-    document.getElementById('webhook-url').value  = cfg.webhookUrl;
-    document.getElementById('verify-token').value = cfg.verifyToken;
-  } catch(e) {
-    log('err', 'Could not fetch server config');
+
+    .contact-item.active {    document.getElementById('webhook-url').value  = cfg.webhookUrl;
+
+      background: var(--primary-light);    document.getElementById('verify-token').value = cfg.verifyToken;
+
+      border-color: var(--primary);  } catch(e) {
+
+    }    log('err', 'Could not fetch server config');
+
   }
-  connectWs();
-})();
 
-// ── WebSocket ────────────────────────────────────────
-function connectWs() {
-  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
-  ws = new WebSocket(`${proto}://${location.host}/ws`);
+    .avatar {  connectWs();
 
-  ws.onopen = () => {
-    setWsStatus(true);
-    log('info', 'WebSocket connected to server');
-  };
+      width: 40px;})();
+
+      height: 40px;
+
+      border-radius: 50%;// ── WebSocket ────────────────────────────────────────
+
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));function connectWs() {
+
+      display: flex;  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+
+      align-items: center;  ws = new WebSocket(`${proto}://${location.host}/ws`);
+
+      justify-content: center;
+
+      font-weight: 700;  ws.onopen = () => {
+
+      font-size: 14px;    setWsStatus(true);
+
+      color: #fff;    log('info', 'WebSocket connected to server');
+
+      flex-shrink: 0;  };
+
+    }
 
   ws.onclose = () => {
-    setWsStatus(false);
-    log('warn', 'WebSocket disconnected — retrying in 3s');
-    setTimeout(connectWs, 3000);
-  };
 
-  ws.onerror = () => log('err', 'WebSocket error');
+    .contact-info {    setWsStatus(false);
 
-  ws.onmessage = (e) => {
-    try {
-      const { event, data } = JSON.parse(e.data);
-      if (event === 'message') handleIncoming(data);
-      if (event === 'status')  log('info', `Status update: msg ${data.id} → ${data.status}`);
+      flex: 1;    log('warn', 'WebSocket disconnected — retrying in 3s');
+
+      min-width: 0;    setTimeout(connectWs, 3000);
+
+    }  };
+
+
+
+    .contact-name {  ws.onerror = () => log('err', 'WebSocket error');
+
+      font-size: 13px;
+
+      font-weight: 600;  ws.onmessage = (e) => {
+
+      white-space: nowrap;    try {
+
+      overflow: hidden;      const { event, data } = JSON.parse(e.data);
+
+      text-overflow: ellipsis;      if (event === 'message') handleIncoming(data);
+
+    }      if (event === 'status')  log('info', `Status update: msg ${data.id} → ${data.status}`);
+
     } catch(err) {
-      log('err', 'Bad WS message: ' + err.message);
-    }
-  };
-}
 
-function setWsStatus(on) {
-  const dot = document.getElementById('ws-dot');
-  const lbl = document.getElementById('ws-status');
+    .contact-preview {      log('err', 'Bad WS message: ' + err.message);
+
+      font-size: 12px;    }
+
+      color: var(--text-secondary);  };
+
+      white-space: nowrap;}
+
+      overflow: hidden;
+
+      text-overflow: ellipsis;function setWsStatus(on) {
+
+      margin-top: 3px;  const dot = document.getElementById('ws-dot');
+
+    }  const lbl = document.getElementById('ws-status');
+
   dot.className = 'dot ' + (on ? 'on' : 'err');
-  lbl.textContent = on ? 'Live · /webhook' : 'Disconnected';
-}
 
-// ── Incoming message ─────────────────────────────────
-function handleIncoming(msg) {
-  const { from: phone, name, text, type, timestamp } = msg;
-  const ts = new Date(parseInt(timestamp) * 1000).toISOString();
+    .empty-state {  lbl.textContent = on ? 'Live · /webhook' : 'Disconnected';
 
-  if (!conversations[phone]) conversations[phone] = { name, messages: [], unread: 0 };
-  conversations[phone].name = name;
-  conversations[phone].messages.push({ id: msg.id, dir: 'inbound', text, type, ts });
-  if (activePhone !== phone) conversations[phone].unread++;
+      padding: 24px 16px;}
 
-  renderContacts();
-  if (activePhone === phone) renderMessages(phone);
-  log('info', `Inbound from ${name} (${phone}): "${text}"`);
+      color: var(--text-muted);
+
+      font-size: 12px;// ── Incoming message ─────────────────────────────────
+
+      text-align: center;function handleIncoming(msg) {
+
+      line-height: 1.6;  const { from: phone, name, text, type, timestamp } = msg;
+
+    }  const ts = new Date(parseInt(timestamp) * 1000).toISOString();
+
+
+
+    /* Main content */  if (!conversations[phone]) conversations[phone] = { name, messages: [], unread: 0 };
+
+    main {  conversations[phone].name = name;
+
+      flex: 1;  conversations[phone].messages.push({ id: msg.id, dir: 'inbound', text, type, ts });
+
+      display: flex;  if (activePhone !== phone) conversations[phone].unread++;
+
+      flex-direction: column;
+
+      min-width: 0;  renderContacts();
+
+      background: var(--bg);  if (activePhone === phone) renderMessages(phone);
+
+    }  log('info', `Inbound from ${name} (${phone}): "${text}"`);
+
   toast(`New message from ${name}`);
-}
 
-// ── Render contacts ───────────────────────────────────
-function renderContacts() {
-  const list = document.getElementById('contacts-list');
-  const phones = Object.keys(conversations);
-  if (!phones.length) {
-    list.innerHTML = '<li class="empty-contacts">No messages yet.<br><br>Point your Meta webhook here.</li>';
-    return;
+    .welcome-screen {}
+
+      flex: 1;
+
+      display: flex;// ── Render contacts ───────────────────────────────────
+
+      flex-direction: column;function renderContacts() {
+
+      align-items: center;  const list = document.getElementById('contacts-list');
+
+      justify-content: center;  const phones = Object.keys(conversations);
+
+      gap: 20px;  if (!phones.length) {
+
+      color: var(--text-muted);    list.innerHTML = '<li class="empty-contacts">No messages yet.<br><br>Point your Meta webhook here.</li>';
+
+    }    return;
+
   }
-  list.innerHTML = phones.map(ph => {
-    const c    = conversations[ph];
-    const last = c.messages[c.messages.length - 1];
-    const preview = last ? last.text.slice(0,38) + (last.text.length>38?'…':'') : '';
-    const time    = last ? fmtTime(last.ts) : '';
-    const unread  = c.unread || 0;
-    const init    = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<li class="contact-item ${ph===activePhone?'active':''}" onclick="selectConversation('${ph}')">
-      <div class="avatar">${init}</div>
-      <div class="contact-info">
+
+    .welcome-icon {  list.innerHTML = phones.map(ph => {
+
+      width: 80px;    const c    = conversations[ph];
+
+      height: 80px;    const last = c.messages[c.messages.length - 1];
+
+      background: var(--primary-light);    const preview = last ? last.text.slice(0,38) + (last.text.length>38?'…':'') : '';
+
+      border-radius: 50%;    const time    = last ? fmtTime(last.ts) : '';
+
+      display: flex;    const unread  = c.unread || 0;
+
+      align-items: center;    const init    = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+      justify-content: center;    return `<li class="contact-item ${ph===activePhone?'active':''}" onclick="selectConversation('${ph}')">
+
+      font-size: 40px;      <div class="avatar">${init}</div>
+
+    }      <div class="contact-info">
+
         <div class="contact-name">${esc(c.name)}</div>
-        <div class="contact-preview">${esc(preview)}</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-        <span class="contact-time">${time}</span>
-        ${unread ? `<span class="badge">${unread}</span>` : ''}
-      </div>
-    </li>`;
-  }).join('');
-}
 
-// ── Select conversation ───────────────────────────────
-function selectConversation(phone) {
+    .welcome-title {        <div class="contact-preview">${esc(preview)}</div>
+
+      font-size: 24px;      </div>
+
+      font-weight: 700;      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+
+      color: var(--text);        <span class="contact-time">${time}</span>
+
+    }        ${unread ? `<span class="badge">${unread}</span>` : ''}
+
+      </div>
+
+    .welcome-text {    </li>`;
+
+      font-size: 14px;  }).join('');
+
+      text-align: center;}
+
+      max-width: 400px;
+
+      line-height: 1.7;// ── Select conversation ───────────────────────────────
+
+    }function selectConversation(phone) {
+
   activePhone = phone;
-  if (conversations[phone]) conversations[phone].unread = 0;
-  renderContacts();
-  const c = conversations[phone];
-  const init = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('chat-avatar').textContent = init;
-  document.getElementById('chat-name').textContent   = c.name;
+
+    /* Chat view */  if (conversations[phone]) conversations[phone].unread = 0;
+
+    #chat-view {  renderContacts();
+
+      display: none;  const c = conversations[phone];
+
+      flex-direction: column;  const init = c.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+
+      height: 100%;  document.getElementById('chat-avatar').textContent = init;
+
+    }  document.getElementById('chat-name').textContent   = c.name;
+
   document.getElementById('chat-phone').textContent  = '+' + phone;
-  document.getElementById('no-selection').style.display = 'none';
-  const cv = document.getElementById('chat-view');
-  cv.style.display = 'flex';
-  renderMessages(phone);
-}
 
-// ── Render messages ───────────────────────────────────
-function renderMessages(phone) {
-  const msgs = conversations[phone]?.messages || [];
+    .chat-header {  document.getElementById('no-selection').style.display = 'none';
+
+      padding: 16px 24px;  const cv = document.getElementById('chat-view');
+
+      border-bottom: 1px solid var(--border);  cv.style.display = 'flex';
+
+      background: var(--surface);  renderMessages(phone);
+
+      display: flex;}
+
+      align-items: center;
+
+      justify-content: space-between;// ── Render messages ───────────────────────────────────
+
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);function renderMessages(phone) {
+
+    }  const msgs = conversations[phone]?.messages || [];
+
   const el   = document.getElementById('messages');
-  if (!msgs.length) {
-    el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding-top:40px">No messages yet</div>';
-    return;
-  }
-  el.innerHTML = msgs.map(m => `
+
+    .chat-contact-info {  if (!msgs.length) {
+
+      display: flex;    el.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding-top:40px">No messages yet</div>';
+
+      align-items: center;    return;
+
+      gap: 12px;  }
+
+    }  el.innerHTML = msgs.map(m => `
+
     <div class="msg ${m.dir}">
-      <div class="bubble">${esc(m.text)}</div>
-      <div class="msg-meta">
-        <span>${fmtTime(m.ts, true)}</span>
-        ${m.type !== 'text' ? `<span class="msg-type-tag">${m.type}</span>` : ''}
+
+    .chat-contact-info .name {      <div class="bubble">${esc(m.text)}</div>
+
+      font-weight: 600;      <div class="msg-meta">
+
+      font-size: 16px;        <span>${fmtTime(m.ts, true)}</span>
+
+    }        ${m.type !== 'text' ? `<span class="msg-type-tag">${m.type}</span>` : ''}
+
       </div>
-    </div>`).join('');
-  el.scrollTop = el.scrollHeight;
-}
 
-// ── Actions ───────────────────────────────────────────
+    .chat-contact-info .phone {    </div>`).join('');
+
+      font-size: 12px;  el.scrollTop = el.scrollHeight;
+
+      color: var(--text-secondary);}
+
+      font-family: 'JetBrains Mono', monospace;
+
+    }// ── Actions ───────────────────────────────────────────
+
 function clearChat() {
-  if (!activePhone) return;
-  conversations[activePhone].messages = [];
-  renderMessages(activePhone);
-}
 
-function clearLog() { document.getElementById('log-entries').innerHTML = ''; }
+    .messages-container {  if (!activePhone) return;
 
-// ── Log ───────────────────────────────────────────────
+      flex: 1;  conversations[activePhone].messages = [];
+
+      overflow-y: auto;  renderMessages(activePhone);
+
+      padding: 20px;}
+
+      display: flex;
+
+      flex-direction: column;function clearLog() { document.getElementById('log-entries').innerHTML = ''; }
+
+      gap: 12px;
+
+    }// ── Log ───────────────────────────────────────────────
+
 function log(level, msg) {
-  const el  = document.getElementById('log-entries');
-  const ts  = new Date().toLocaleTimeString('en-GB', { hour12: false });
-  const map = { info: 'lvl-info', warn: 'lvl-warn', err: 'lvl-err' };
+
+    .messages-container::-webkit-scrollbar {  const el  = document.getElementById('log-entries');
+
+      width: 6px;  const ts  = new Date().toLocaleTimeString('en-GB', { hour12: false });
+
+    }  const map = { info: 'lvl-info', warn: 'lvl-warn', err: 'lvl-err' };
+
   const d   = document.createElement('div');
-  d.className = 'log-entry';
-  d.innerHTML = `<span class="ts">[${ts}]</span> <span class="${map[level]||''}">${level.toUpperCase()}</span> ${esc(msg)}`;
-  el.appendChild(d);
-  el.parentElement.scrollTop = el.parentElement.scrollHeight;
+
+    .messages-container::-webkit-scrollbar-thumb {  d.className = 'log-entry';
+
+      background: var(--border);  d.innerHTML = `<span class="ts">[${ts}]</span> <span class="${map[level]||''}">${level.toUpperCase()}</span> ${esc(msg)}`;
+
+      border-radius: 3px;  el.appendChild(d);
+
+    }  el.parentElement.scrollTop = el.parentElement.scrollHeight;
+
 }
 
-// ── Helpers ───────────────────────────────────────────
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    .message {
+
+      display: flex;// ── Helpers ───────────────────────────────────────────
+
+      animation: slideIn 0.3s ease;function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    }
 
 function fmtTime(iso, full=false) {
-  const d   = new Date(iso);
-  const now = new Date();
-  if (full) return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false });
-  return d.toDateString() === now.toDateString()
-    ? d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false })
-    : d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+
+    @keyframes slideIn {  const d   = new Date(iso);
+
+      from {  const now = new Date();
+
+        opacity: 0;  if (full) return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false });
+
+        transform: translateY(8px);  return d.toDateString() === now.toDateString()
+
+      }    ? d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', hour12:false })
+
+      to {    : d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+
+        opacity: 1;}
+
+        transform: translateY(0);
+
+      }function copyEl(id) {
+
+    }  navigator.clipboard.writeText(document.getElementById(id).value).then(() => toast('Copied!'));
+
 }
 
-function copyEl(id) {
-  navigator.clipboard.writeText(document.getElementById(id).value).then(() => toast('Copied!'));
-}
+    .message.inbound {
 
-let toastTimer;
-function toast(msg, err=false) {
+      justify-content: flex-start;let toastTimer;
+
+    }function toast(msg, err=false) {
+
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show' + (err?' error':'');
-  clearTimeout(toastTimer);
+
+    .message.outbound {  el.textContent = msg;
+
+      justify-content: flex-end;  el.className = 'show' + (err?' error':'');
+
+    }  clearTimeout(toastTimer);
+
   toastTimer = setTimeout(() => el.className = '', 2500);
-}
-</script>
+
+    .message-bubble {}
+
+      max-width: 60%;</script>
+
+      display: flex;</body>
+
+      flex-direction: column;</html>
+
+      gap: 4px;
+    }
+
+    .message-text {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+
+    .message.inbound .message-text {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .message.outbound .message-text {
+      background: var(--primary);
+      color: #000;
+      border: none;
+    }
+
+    .message-meta {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 0 4px;
+    }
+
+    .message.outbound .message-meta {
+      justify-content: flex-end;
+    }
+
+    .message-type {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .message-media {
+      padding: 8px 12px;
+      background: var(--surface-alt);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      WhatsApp Dashboard
+    </div>
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span id="connection-status">Connected</span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <aside>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Status</div>
+        <div class="info-card">
+          <div class="info-label">Server</div>
+          <div class="status-badge">✓ Running</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Messages Received</div>
+          <div class="info-value" id="msg-count">0</div>
+        </div>
+        <div class="info-card">
+          <div class="info-label">Active Contacts</div>
+          <div class="info-value" id="contact-count">0</div>
+        </div>
+      </div>
+
+      <div class="contacts-section">
+        <div style="padding: 0 20px; padding-top: 12px;">
+          <div class="sidebar-section-title">Recent Conversations</div>
+        </div>
+        <ul class="contacts-list" id="contacts-list">
+          <div class="empty-state">No conversations yet</div>
+        </ul>
+      </div>
+    </aside>
+
+    <main id="main-content">
+      <div class="welcome-screen" id="welcome-screen">
+        <div class="welcome-icon">💬</div>
+        <div class="welcome-title">Welcome to WhatsApp Dashboard</div>
+        <div class="welcome-text">
+          Select a conversation from the sidebar to view messages, or wait for new messages to arrive.
+        </div>
+      </div>
+
+      <div id="chat-view">
+        <div class="chat-header">
+          <div class="chat-contact-info">
+            <div class="avatar" id="chat-avatar" style="width: 44px; height: 44px; font-size: 16px;"></div>
+            <div>
+              <div class="name" id="chat-contact-name"></div>
+              <div class="phone" id="chat-contact-phone"></div>
+            </div>
+          </div>
+        </div>
+        <div class="messages-container" id="messages-container"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    let contacts = {};
+    let messages = {};
+    let currentContact = null;
+
+    // WebSocket connection
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+
+    ws.addEventListener('open', () => {
+      console.log('WebSocket connected');
+      updateConnectionStatus(true);
+    });
+
+    ws.addEventListener('close', () => {
+      console.log('WebSocket disconnected');
+      updateConnectionStatus(false);
+      setTimeout(() => location.reload(), 3000);
+    });
+
+    ws.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event === 'message') {
+          handleNewMessage(data.data);
+        } else if (data.event === 'status') {
+          handleStatusUpdate(data.data);
+        }
+      } catch (err) {
+        console.error('WebSocket message error:', err);
+      }
+    });
+
+    function handleNewMessage(msg) {
+      const phone = msg.from;
+      
+      if (!contacts[phone]) {
+        contacts[phone] = {
+          phone,
+          name: msg.name || phone,
+          lastMessage: msg.text,
+          lastTime: new Date(msg.timestamp * 1000),
+          unread: 0
+        };
+      }
+
+      if (!messages[phone]) {
+        messages[phone] = [];
+      }
+
+      messages[phone].push({
+        id: msg.id,
+        type: msg.type,
+        text: msg.text,
+        timestamp: msg.timestamp,
+        direction: 'inbound'
+      });
+
+      updateContactsList();
+      updateStats();
+      
+      if (currentContact === phone) {
+        renderMessages(phone);
+      }
+    }
+
+    function handleStatusUpdate(status) {
+      console.log('Status update:', status);
+    }
+
+    function updateConnectionStatus(connected) {
+      const el = document.getElementById('connection-status');
+      el.textContent = connected ? 'Connected' : 'Connecting...';
+    }
+
+    function updateStats() {
+      const totalMessages = Object.values(messages).reduce((sum, arr) => sum + arr.length, 0);
+      document.getElementById('msg-count').textContent = totalMessages;
+      document.getElementById('contact-count').textContent = Object.keys(contacts).length;
+    }
+
+    function updateContactsList() {
+      const list = document.getElementById('contacts-list');
+      const sorted = Object.values(contacts).sort((a, b) => b.lastTime - a.lastTime);
+
+      if (sorted.length === 0) {
+        list.innerHTML = '<div class="empty-state">No conversations yet</div>';
+        return;
+      }
+
+      list.innerHTML = sorted.map(contact => {
+        const initials = contact.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const isActive = currentContact === contact.phone;
+        return `
+          <li class="contact-item ${isActive ? 'active' : ''}" onclick="selectContact('${contact.phone}')">
+            <div class="avatar">${initials}</div>
+            <div class="contact-info">
+              <div class="contact-name">${contact.name}</div>
+              <div class="contact-preview">${contact.lastMessage}</div>
+            </div>
+          </li>
+        `;
+      }).join('');
+    }
+
+    function selectContact(phone) {
+      currentContact = phone;
+      updateContactsList();
+      renderChatView();
+    }
+
+    function renderChatView() {
+      if (!currentContact) return;
+
+      const contact = contacts[currentContact];
+      const chatView = document.getElementById('chat-view');
+      const welcomeScreen = document.getElementById('welcome-screen');
+
+      document.getElementById('chat-avatar').textContent = contact.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      document.getElementById('chat-contact-name').textContent = contact.name;
+      document.getElementById('chat-contact-phone').textContent = contact.phone;
+
+      welcomeScreen.style.display = 'none';
+      chatView.style.display = 'flex';
+
+      renderMessages(currentContact);
+    }
+
+    function renderMessages(phone) {
+      const container = document.getElementById('messages-container');
+      const msgs = messages[phone] || [];
+
+      container.innerHTML = msgs.map(msg => {
+        let content = msg.text;
+        
+        if (msg.type !== 'text') {
+          content = `<div class="message-media">${msg.text}</div>`;
+        }
+
+        return `
+          <div class="message ${msg.direction}">
+            <div class="message-bubble">
+              ${content.startsWith('<') ? content : `<div class="message-text">${escapeHtml(content)}</div>`}
+              <div class="message-meta">
+                <span class="message-type">${msg.type}</span>
+                <span>${new Date(msg.timestamp * 1000).toLocaleTimeString()}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Initial load
+    updateStats();
+  </script>
 </body>
 </html>
