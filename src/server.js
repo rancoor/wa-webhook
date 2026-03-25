@@ -1,26 +1,17 @@
 require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const WebSocket = require('ws');
-const morgan = require('morgan');
 const cors = require('cors');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
 const webhookRouter = require('./routes/webhook');
-const { initWss } = require('./ws');
 
 const app = express();
-const server = http.createServer(app);
 
-// Trust reverse proxy headers (ngrok, load balancers) so rate-limiter gets correct IP
+// Trust reverse proxy headers (ngrok, load balancers, Vercel)
 app.set('trust proxy', true);
-
-// ── WebSocket server ──────────────────────────────────
-initWss(server);
 
 // ── Middleware ────────────────────────────────────────
 app.use(cors());
-app.use(morgan('dev'));
 
 // Rate limiting for webhooks (100 requests per minute per IP)
 const webhookLimiter = rateLimit({
@@ -48,8 +39,10 @@ app.use((req, res, next) => {
   }
 });
 
-// ── Static frontend ───────────────────────────────────
-app.use(express.static(path.join(__dirname, '../public')));
+// ── Static frontend (only in local/dev, not needed for serverless) ───
+if (!process.env.VERCEL) {
+  app.use(express.static(path.join(__dirname, '../public')));
+}
 
 // ── Routes ────────────────────────────────────────────
 app.use('/webhook', webhookLimiter, webhookRouter);
@@ -76,11 +69,20 @@ app.get('/api/messages', (req, res) => {
   res.json(messages);
 });
 
-// ── Start ─────────────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`\n✅  WA Webhook Receiver running`);
-  console.log(`   Local:   http://localhost:${PORT}`);
-  console.log(`   Webhook: http://localhost:${PORT}/webhook`);
-  console.log(`   Token:   ${process.env.VERIFY_TOKEN || '(not set)'}\n`);
-});
+// ── Start (only if not serverless) ────────────────────
+if (!process.env.VERCEL) {
+  const http = require('http');
+  const { initWss } = require('./ws');
+  const server = http.createServer(app);
+  initWss(server);
+  
+  const PORT = process.env.PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`\n✅  WA Webhook Receiver running`);
+    console.log(`   Local:   http://localhost:${PORT}`);
+    console.log(`   Webhook: http://localhost:${PORT}/webhook`);
+    console.log(`   Token:   ${process.env.VERIFY_TOKEN || '(not set)'}\n`);
+  });
+}
+
+module.exports = app;
