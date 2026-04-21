@@ -4,9 +4,15 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "functions": {
-    "api/webhook.js": {
+    "api/index.js": {
       "memory": 1024,
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
+  ]
 }

@@ -39,10 +39,13 @@ app.use((req, res, next) => {
   }
 });
 
-// ── Static frontend (only in local/dev, not needed for serverless) ───
-if (!process.env.VERCEL) {
-  app.use(express.static(path.join(__dirname, '../public')));
-}
+// ── Static frontend ───────────────────────────────────
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Serve index.html for root and SPA routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
+});
 
 // ── Routes ────────────────────────────────────────────
 app.use('/webhook', webhookLimiter, webhookRouter);
