@@ -3,11 +3,6 @@
   "buildCommand": "npm install",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "env": {
-    "VERIFY_TOKEN": "@verify_token",
-    "WHATSAPP_API_TOKEN": "@whatsapp_api_token",
-    "PHONE_NUMBER_ID": "@phone_number_id"
-  },
   "functions": {
     "api/webhook.js": {
       "memory": 1024,
