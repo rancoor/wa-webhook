@@ -62,11 +62,17 @@ app.get('/api/config', (req, res) => {
 
 // Messages API endpoint
 app.get('/api/messages', (req, res) => {
-  const { getMessages } = require('./db');
-  const limit = Math.min(parseInt(req.query.limit) || 50, 500);
-  const offset = parseInt(req.query.offset) || 0;
-  const messages = getMessages(limit, offset);
-  res.json(messages);
+  // Try to get messages from database (local only)
+  try {
+    const { getMessages } = require('./db');
+    const limit = Math.min(parseInt(req.query.limit) || 50, 500);
+    const offset = parseInt(req.query.offset) || 0;
+    const messages = getMessages(limit, offset);
+    res.json(messages);
+  } catch (err) {
+    // Database not available (Vercel/serverless)
+    res.json({ messages: [] });
+  }
 });
 
 // ── Start (only if not serverless) ────────────────────

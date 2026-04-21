@@ -1,7 +1,18 @@
 require('dotenv').config();
 const crypto = require('crypto');
 const { broadcast } = require('../../ws');
-const { saveMessage, saveStatus } = require('../../db');
+
+// Try to load database (only available locally, not on Vercel)
+let saveMessage, saveStatus;
+try {
+  const db = require('../../db');
+  saveMessage = db.saveMessage;
+  saveStatus = db.saveStatus;
+} catch (err) {
+  // Database not available (Vercel/serverless environment)
+  saveMessage = () => {};
+  saveStatus = () => {};
+}
 
 function verifyWebhookSignature(rawBody, signatureHeader) {
   const appSecret = process.env.WHATSAPP_APP_SECRET;

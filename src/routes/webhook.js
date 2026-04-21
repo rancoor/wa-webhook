@@ -2,7 +2,18 @@ const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
 const { broadcast } = require('../ws');
-const { saveMessage, saveStatus } = require('../db');
+
+// Try to load database (only available locally, not on Vercel)
+let saveMessage, saveStatus;
+try {
+  const db = require('../db');
+  saveMessage = db.saveMessage;
+  saveStatus = db.saveStatus;
+} catch (err) {
+  // Database not available (Vercel/serverless environment)
+  saveMessage = () => {};
+  saveStatus = () => {};
+}
 
 // ── Webhook signature verification ────────────────────
 function verifyWebhookSignature(rawBody, signatureHeader) {
